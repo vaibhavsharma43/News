@@ -1,11 +1,10 @@
 package com.vaibhav.news.Controller;
 
 import com.vaibhav.news.Entity.News;
-
-
 import com.vaibhav.news.Service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,35 +14,50 @@ import java.util.List;
 public class NewsController {
 
     @Autowired
-   private NewsService newsService;
+    private NewsService newsService;
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping
     public News createNews(@RequestBody News news) {
         return newsService.saveNews(news);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<News> getAllNews() {
+
         return newsService.getAllNews();
-
     }
-    @DeleteMapping("/{Id}")
-    public ResponseEntity<String> deleteNews(@PathVariable String Id) {
 
-        boolean isDeleted=  newsService.deleteNews(Id);
-        if(isDeleted){
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteNews(@PathVariable String id) {
+        boolean isDeleted = newsService.deleteNews(id);
+        if (isDeleted) {
             return ResponseEntity.ok("News deleted successfully");
-        }else{
+        } else {
             return ResponseEntity.ok("News not deleted successfully");
         }
-
     }
-    @PutMapping("/{Id}")
-    public ResponseEntity<String> updateNews(@PathVariable String Id, @RequestBody News news) {
-        boolean isUpdated=  newsService.updateNews(Id, news);
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateNews(@PathVariable String id, @RequestBody News
+            news) {
+        boolean isUpdated = newsService.updateNews(id, news);
         if (isUpdated) {
             return ResponseEntity.ok("News updated successfully");
-        }else{
+        } else {
             return ResponseEntity.ok("News not updated successfully");
         }
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("id/{id}")
+    public ResponseEntity<News> getNews(@PathVariable String id) {
+
+        News news = newsService.getNewsById(id);
+        return ResponseEntity.ok(news);
+    }
+
 }

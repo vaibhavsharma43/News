@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface NewsService {
     News saveNews(News news);
+    News  getNewsById(String id);
     List<News> getAllNews();
     boolean deleteNews(String Id);
     boolean updateNews(String Id,News news);
+
 }

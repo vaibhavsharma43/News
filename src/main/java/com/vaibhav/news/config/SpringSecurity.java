@@ -22,7 +22,10 @@ public class SpringSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(request -> request
-                        .requestMatchers("user", "api/news").authenticated()
+                    
+                        .requestMatchers("/api/Admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/Editor/**").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "USER", "EDITOR")
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
